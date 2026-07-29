@@ -6,6 +6,8 @@
 <title>Delly Technologies — Desarrollo de sistemas a medida</title>
 <meta name="description" content="Delly Technologies: sistemas administrativos, apps web y herramientas a medida para negocios reales.">
 
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMxMTExMTEiLz4KICA8dGV4dCB4PSIzMyIgeT0iNDYiIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjM4IiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjMkE0QkQ3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5EPC90ZXh0Pgo8L3N2Zz4K">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -799,26 +801,29 @@
     <div class="row g-4">
       <div class="col-lg-7">
         <div class="contact-panel">
-          <form>
+          <form id="formContacto">
+            <input type="hidden" name="_subject" value="Nuevo contacto desde dellytechnologies.com">
+            <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
             <div class="row g-4">
               <div class="col-md-6">
                 <label class="form-label" for="nombre">Nombre</label>
-                <input type="text" class="form-control" id="nombre" placeholder="Tu nombre">
+                <input type="text" class="form-control" id="nombre" name="Nombre" placeholder="Tu nombre" required>
               </div>
               <div class="col-md-6">
                 <label class="form-label" for="empresa">Empresa</label>
-                <input type="text" class="form-control" id="empresa" placeholder="Nombre de tu negocio">
+                <input type="text" class="form-control" id="empresa" name="Empresa" placeholder="Nombre de tu negocio">
               </div>
               <div class="col-12">
                 <label class="form-label" for="correo">Correo</label>
-                <input type="email" class="form-control" id="correo" placeholder="tucorreo@ejemplo.com">
+                <input type="email" class="form-control" id="correo" name="Correo" placeholder="tucorreo@ejemplo.com" required>
               </div>
               <div class="col-12">
                 <label class="form-label" for="mensaje">¿Qué proceso quieres resolver?</label>
-                <textarea class="form-control" id="mensaje" rows="4" placeholder="Cuéntanos qué te gustaría automatizar o mejorar"></textarea>
+                <textarea class="form-control" id="mensaje" name="Mensaje" rows="4" placeholder="Cuéntanos qué te gustaría automatizar o mejorar" required></textarea>
               </div>
               <div class="col-12">
-                <button type="submit" class="btn btn-yellow">Enviar mensaje</button>
+                <button type="submit" class="btn btn-yellow" id="btnEnviar">Enviar mensaje</button>
+                <span id="formEstado" class="mono" style="display:block; margin-top:0.9rem; font-size:0.85rem;"></span>
               </div>
             </div>
           </form>
@@ -864,6 +869,41 @@
       }
     });
   });
+
+  // Envío del formulario de contacto a dellytechnologies@gmail.com vía FormSubmit
+  var formContacto = document.getElementById('formContacto');
+  if(formContacto){
+    formContacto.addEventListener('submit', function(e){
+      e.preventDefault();
+      var btn = document.getElementById('btnEnviar');
+      var estado = document.getElementById('formEstado');
+      var textoOriginal = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      estado.textContent = '';
+      estado.style.color = '';
+
+      fetch('https://formsubmit.co/ajax/dellytechnologies@gmail.com', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: new FormData(formContacto)
+      })
+      .then(function(res){ return res.json(); })
+      .then(function(){
+        estado.textContent = 'Mensaje enviado. Te contactaremos pronto.';
+        estado.style.color = '#2E7D32';
+        formContacto.reset();
+      })
+      .catch(function(){
+        estado.textContent = 'No se pudo enviar. Escríbenos directo a dellytechnologies@gmail.com';
+        estado.style.color = '#B00020';
+      })
+      .finally(function(){
+        btn.disabled = false;
+        btn.textContent = textoOriginal;
+      });
+    });
+  }
 </script>
 </body>
 </html>
